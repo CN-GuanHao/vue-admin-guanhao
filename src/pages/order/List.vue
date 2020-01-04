@@ -5,11 +5,15 @@
        <el-button type="danger" size="small" >批量删除</el-button>
         <!-- /按钮结束 -->
         <!-- 表格 -->
-       <el-table :data="customers">
+       <el-table :data="orders.list">
            <el-table-column prop="id" label="编号" ></el-table-column>
-           <el-table-column prop="realname" label="姓名" ></el-table-column>
-           <el-table-column prop="telephone" label="联系方式" ></el-table-column>
-           <el-table-column label="操作" >
+           <el-table-column width="200" prop="orderTime" label="下单时间" ></el-table-column>
+           <el-table-column prop="total" label="总价" ></el-table-column>
+           <el-table-column prop="status" label="状态" ></el-table-column>
+           <el-table-column prop="customerId" label="顾客ID" ></el-table-column>
+           <el-table-column prop="waiterId" label="员工ID"></el-table-column>
+           <el-table-column prop="addressId" label="地址ID" ></el-table-column>
+           <el-table-column fixed="right" label="操作" >
                <template v-slot="slot">
                     <a href="" @click.prevent="toDeleteHandler(slot.row.id)">删除</a>
                     <a href="" @click.prevent="toUpdateHandler(slot.row)">修改</a>
@@ -18,11 +22,10 @@
        </el-table>
         <!-- /表格结束 -->
         <!-- 分页开始 -->
-        <!-- <el-pagination layout="prev, pager, next" :total="50"> -->
-        <!-- </el-pagination> -->
+        <el-pagination layout="prev, pager, next" :total="orders.total" @current-change="pageChangeHandler"></el-pagination>
         <!-- /分页结束 -->
          <!-- 模态框 -->
-        <el-dialog title="录入顾客信息"  :visible.sync="visible"  width="60%">
+        <el-dialog title="录入订单信息"  :visible.sync="visible"  width="60%">
             ---{{form}}
             <el-form :model="form" label-width="80px">
                 <el-form-item label="用户名">
@@ -51,22 +54,36 @@
 import request from '@/utils/request'
 import querystring from 'querystring'
 export default {
-    //暴露接口,用于存放网页中需要调用的方法
+    //暴露接口
+    //用于存放网页中需要调用的方法
     methods:{
+        // 当分页中当前页改变的时候执行
+        pageChangeHandler(page){
+        // 将params中当前页改为插件中的当前页
+            this.params.page = page-1;
+            // 加载
+            this.loadData();
+        },
         loadData(){
-            let url = "http://localhost:6677/customer/findAll"
-            request.get(url).then((response)=>{
-            //将查询结果设置到customers中，this指向外部函数的this
-            this.customers = response.data;
-        })
+            let url = "http://localhost:6677/order/queryPage"
+            request({
+                url,
+                method:"post",
+                headers:{
+                    "Content-Type":"application/x-www-form-urlencoded"
+                },
+                data:querystring.stringify(this.params)
+            }).then((response)=>{
+                this.orders = response.data;
+            })
         },
         submitHandler(){
-            //this.form 对象 ---字符串--> 后台 {type:'customer',age:12}
-            // json字符串 '{"type":"customer","age":12}'
+            //this.form 对象 ---字符串--> 后台 {type:'order',age:12}
+            // json字符串 '{"type":"order","age":12}'
             // request.post(url,this.form)
-            // 查询字符串 type=customer&age=12
+            // 查询字符串 type=order&age=12
             // 通过request与后台进行交互，并且要携带参数
-            let url = "http://localhost:6677/customer/saveOrUpdate"
+            let url = "http://localhost:6677/order/saveOrUpdate"
             request({
                 url,
                 method:"POST",
@@ -94,7 +111,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 //调用后台接口完成删除操作
-                let url = "http://localhost:6677/customer/deleteById?id="+id;
+                let url = "http://localhost:6677/order/deleteById?id="+id;
                 request.get(url).then((response)=>{
                     //刷新数据
                     this.loadData();
@@ -117,7 +134,7 @@ export default {
         toAddHandler(){
             //将form变为初始值
             this.form = {
-                type:"customer"
+                type:"order"
             }
             this.visible=true;
         }
@@ -126,16 +143,20 @@ export default {
     data(){
         return{
             visible:false,
-            customers:[],
+            orders:{},
             form:{
-                type:"customer"
+                type:"order"
+            },
+            params:{
+                page:0,
+                pageSize:10
             }
         }
     },
     created(){
         //this为当前vue实例对象
         //vue实例完毕
-        this.loadData()
+        this.loadData();
     }
 }
 </script>

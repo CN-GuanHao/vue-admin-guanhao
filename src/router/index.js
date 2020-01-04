@@ -76,7 +76,43 @@ export const constantRoutes = [
         path: 'list',
         name: 'EmployeeList',
         component: () => import('@/pages/employee/List'),//@代表src
-        meta: { title: '员工管理', icon: 'tree' }
+        meta: { title: '员工管理', icon: 'user' }
+      }
+    ]
+  },
+  {
+    path: '/category',
+    component: Layout,
+    children: [
+      {
+        path: 'list',
+        name: 'CategoryList',
+        component: () => import('@/pages/category/List'),//@代表src
+        meta: { title: '栏目管理', icon: 'tree' }
+      }
+    ]
+  },
+  {
+    path: '/product',
+    component: Layout,
+    children: [
+      {
+        path: 'list',
+        name: 'ProductList',
+        component: () => import('@/pages/product/List'),//@代表src
+        meta: { title: '产品管理', icon: 'tree' }
+      }
+    ]
+  },
+  {
+    path: '/order',
+    component: Layout,
+    children: [
+      {
+        path: 'list',
+        name: 'OrderList',
+        component: () => import('@/pages/order/List'),//@代表src
+        meta: { title: '订单管理', icon: 'tree' }
       }
     ]
   },

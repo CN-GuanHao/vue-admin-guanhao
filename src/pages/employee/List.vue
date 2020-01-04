@@ -1,8 +1,8 @@
 <template>
     <div>
         <!-- 按钮 -->
-            <el-button size="small" type="success" @click="toAddHandler">添加</el-button>
-            <el-button size="small" type="danger">批量删除</el-button>          
+        <el-button size="small" type="success" @click="toAddHandler">添加</el-button>
+        <el-button size="small" type="danger">批量删除</el-button>          
         <!-- /按钮结束 -->
         <!-- 表格 -->
         <el-table :data="employees">
@@ -65,7 +65,7 @@
 
 <script>
 import request from '@/utils/request' //自定义库
-import querystring, { stringify } from 'querystring' //系统库
+import querystring from 'querystring' //系统库
 export default {//暴露接口
     data(){
         return{
